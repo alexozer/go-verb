@@ -1,0 +1,37 @@
+verb.js revision: 70bcfe8758a9302a3c1844c404d012348795da1e
+
+Todo:
+Export internal.Mesh? Public nurbs tesselation currently returns internal.Mesh
+Reorganize curve.go and surface.go into files like tess.go and analyze.go
+implement core.Make as verb/make
+geom.NurbsSurface.byLoftingCurves()
+Change optional arguments to start with underscore
+	Actually, this is kinda ugly... how else can we handle default arguments?
+
+Completed:
+core.Constants -> internal/constants.go
+core.types -> internal/
+core.Mesh -> internal/mesh.go
+core.Analyze
+core.Check
+core.Divide
+core.Trig
+core.Tess
+core.Modify
+core.Eval
+core.Binomial
+
+Design:
+Make NurbsCurve and NurbsSurface completely immutable. Advantages:
+	Easier to implement concurrency (no mutexes / data races)
+	Method names don't need to be in past tense since none will modify the curve or surface
+		example: knotInserted() -> insertKnot()
+	Underlying arrays to slices can be shared between similar curves and surfaces
+		example: the result from Transform() can share the knot vector with the original
+	Nurbs*.clone() shouldn't be public, as client can't modify internals anyway
+Currently, default arguments are implemented as following:
+	Name begins with underscore
+	Value can be represented as nil
+		If value is primitive or struct, it is a pointer to the val
+		If string, slice, or map, can be nil anyway
+	Is there a better way to handle this?
